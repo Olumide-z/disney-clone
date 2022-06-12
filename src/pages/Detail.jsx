@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
+import db from '../firebase';
 
 const Detail = () => {
+  const { id } = useParams();
+  const [ movie, setMovie ] = useState();
+
+  useEffect(() => {
+    //Grab the movie info from DB
+    db.collection('Movies')
+    .doc(id)
+    .get()
+    .then((doc) => {
+        if(doc.exists){
+          //save the movie data
+          setMovie(doc.data());
+        }else{
+          //redirect to home page
+        }
+      })
+  }, [id]);
+
+  // console.log(movie)
   return (
     <Container>
+      {movie &&
+      <>
         <Background>
-            <img src='/images/1.jpg' />
+            <img src={movie.BackgroundImg} />
         </Background>
         <ImageTitle>
-          <img src='/images/1.jpg' />
+          <img src={movie.TitleImg} />
         </ImageTitle>
         <Controls>
           <PlayButton>
@@ -27,13 +50,13 @@ const Detail = () => {
           </GroupWatchButton>
         </Controls>
         <SubTitle>
-          2018 . 7m . Family, Fantasy, Kids, Animation
+          {movie.Genres}
         </SubTitle>
         <Description>
-          Lorem ipsum, dolor sit amet consectetur adipisicing 
-          elit. Quam temporibus velit obcaecati magni voluptas cumque mollitia 
-          tempora atque laboriosam similique? 
+          {movie.Description}
         </Description>
+        </>
+      }
     </Container>
   )
 }
